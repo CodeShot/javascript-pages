@@ -18,9 +18,9 @@ const defaultPlotStyle = {
 
 class PlotView {
   constructor(height, width, unitsize, style=defaultPlotStyle, origo=undefined) {
-    this.width = width;
-    this.height = height;
-    this.unitsize = unitsize;
+    this.width = parseInt(width);
+    this.height = parseInt(height);
+    this.unitsize = parseInt(unitsize);
     this.style = style;
     this.origo = origo;
     this.id = "plotcanvas";
@@ -144,7 +144,7 @@ class PlotView {
 
   makeGrid() {
     this.setOrigo();
-
+ 
     this.ctx.strokeStyle = this.style.gridColor;
     this.ctx.beginPath();
     for (let x = 0; x < this.width - this.origo.x; x+=this.unitsize) {
