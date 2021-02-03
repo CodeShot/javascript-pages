@@ -1,0 +1,92 @@
+<html>
+  <head>
+    <title>Canvas is ez pixels</title>
+  </head>
+  <body>
+    <div>
+      <input id="viewWidth" type="number" value="400">
+      <input id="viewHeight" type="number" value="400">
+      <input id="unitSize" type="number" value="20">
+      <input id="updateView" type="button" value="Update View">
+    </div>
+    <div id="plot"></div>
+    <div id="panel">
+      <div id="curves">
+        <!--- <input type="range"> --->
+      </div>
+      <input id="newcurve" type="button" value="New curve">
+      <input id="update" type="button" value="Update">
+      <input id="clearupdate" type="button" value="Clear Update">
+    </div>
+    <script src="PlotView.js"></script>
+    <script type="text/javascript">
+        var p = new PlotView(600, 600, 20);
+        p.injectToAnchor("plot");
+        p.curves = 0;
+
+        function plotUserCurves() {
+          for (let i = 0; i < p.curves; i++) {
+            let curve = document.getElementById("curve" + i);
+            let color = document.getElementById("color" + i);
+            let start = document.getElementById("start" + i);
+            let end = document.getElementById("end" + i);
+
+            p.plotGraph(curve.value,
+              {start: start.value, end: end.value}, color.value);
+          }
+        }
+
+        document.getElementById("update").addEventListener("click", e => {
+          plotUserCurves();
+        });
+
+        document.getElementById("clearupdate").addEventListener("click", e => {
+          p.clearGraph();
+          plotUserCurves();
+        });
+
+        document.getElementById("newcurve").addEventListener("click", e => {
+          let container = document.createElement("div");
+          container.classList.add("curveinput");
+
+          let curve = document.createElement("input");
+          curve.setAttribute("type", "text");
+          curve.setAttribute("id", "curve" + p.curves);
+          container.appendChild(curve);
+
+          let color = document.createElement("input");
+          color.setAttribute("type", "color");
+          color.setAttribute("value", "#00ff00");
+          color.setAttribute("id", "color" + p.curves);
+          container.appendChild(color);
+
+          let start = document.createElement("input");
+          start.setAttribute("type", "number");
+          start.setAttribute("id", "start" + p.curves);
+          container.appendChild(start);
+
+          let end = document.createElement("input");
+          end.setAttribute("type", "number");
+          end.setAttribute("id", "end" + p.curves);
+          container.appendChild(end);
+
+          document.getElementById("curves").appendChild(container);
+          p.curves++;
+        });
+
+        document.getElementById("updateView").addEventListener("click", e => {
+            let canvas = document.getElementById(p.id);
+            if (typeof canvas !== "undefined")
+              canvas.parentNode.removeChild(canvas);
+
+            let width = document.getElementById("viewWidth").value;
+            let height = document.getElementById("viewHeight").value;
+            let unitsize = document.getElementById("unitSize").value;
+
+            p = new PlotView(height, width, unitsize);
+
+            p.injectToAnchor("plot");
+        });
+    </script>
+  </body>
+</html>
