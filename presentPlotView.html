@@ -5,6 +5,16 @@
   <body>
     <div id="plot"></div>
     <div id="panel">
+    <select id="origoVPosition">
+      <option value="top">Top</option>
+      <option value="center">Center</option>
+      <option value="bottom">Bottom</option>
+    </select>
+    <select id="origoHPosition">
+      <option value="left">Left</option>
+      <option value="center">Center</option>
+      <option value="right">Right</option>
+    </select>
       <div id="curves">
       </div>
       <input id="newcurve" type="button" value="New curve">
@@ -65,6 +75,23 @@
 
           document.getElementById("curves").appendChild(container);
           p.curves++;
+        });
+        
+        document.getElementById("updateOrigo").addEventListener("click", e => {
+          let vPos = document.getElementById("origoVPosition");
+          let hPos = document.getElementById("origoHPosition");
+
+          if (vPos.value == "top") var y = 0;
+          if (vPos.value == "center") var y = p.height / 2;
+          if (vPos.value == "bottom") var y = p.height;
+
+          if (hPos.value == "left") var x = 0;
+          if (hPos.value == "center") var x = p.width / 2;
+          if (hPos.value == "right") var x = p.width;
+
+          p.origo = {x: x, y: y};
+          p.clearGraph();
+          p.plotGraph("x ** 2", {start: 0, end: 5}, "red");
         });
     </script>
   </body>
