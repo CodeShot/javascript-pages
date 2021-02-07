@@ -1,0 +1,147 @@
+<html>
+  <head>
+    <title>PlotView Test</title>
+  </head>
+  <body>
+    <div>
+      <input id="viewWidth" type="number" value="600">
+      <input id="viewHeight" type="number" value="600">
+      <input id="unitSize" type="number" value="20">
+      <input id="updateView" type="button" value="Update View">
+    </div>
+    <div id="plot"></div>
+    <div id="panel">
+      <select id="origoVPosition" value="center">
+        <option value="top">Top</option>
+        <option value="center">Center</option>
+        <option value="bottom">Bottom</option>
+      </select>
+      <select id="origoHPosition" value="center">
+        <option value="left">Left</option>
+        <option value="center">Center</option>
+        <option value="right">Right</option>
+      </select>
+
+      <input id="updateOrigo" type="button" value="Update origo">
+      <div id="curves">
+      </div>
+      <input id="newcurve" type="button" value="New curve">
+      <input id="update" type="button" value="Update">
+      <input id="clearupdate" type="button" value="Clear Update">
+    </div>
+    <script src="PlotView.js"></script>
+    <script type="text/javascript">
+        var p = new PlotView(600, 600, 20);
+        p.injectToAnchor("plot");
+
+        // Event handler to register clicks and enabling/disabling curve snapping
+        p.canvas.addEventListener("click", e => {
+          if (p.clicked) {
+            p.clicked = false;
+            e.removeEventListener("move");
+          }
+          else {
+            p.clicked = true;
+            e.addEventListener("move", p.trackClosest);
+          }
+        });
+
+        // Traverses DOM to populate corresponding PolynomialCurve object in
+        // PlotView
+        function plotUserCurves() {
+          for (let i = 0; i < p.polynomialCurves.length; i++) {
+            let expr = document.getElementById("expr" + i);
+            let color = document.getElementById("color" + i);
+            let start = document.getElementById("start" + i);
+            let end = document.getElementById("end" + i);
+
+            let curve = p.polynomialCurves[i];
+            curve.expr = expr.value;
+            curve.range = {
+              start: parseInt(start.value),
+              end: parseInt(end.value)};
+            curve.color = color.value;
+
+            p.plotPolynomialCurve(curve);
+          }
+        }
+
+        // Update PlotView canvas (desired side-effect is ability to easily plot)
+        // a series of curves from one inputputfield.
+        document.getElementById("update").addEventListener("click", e => {
+          plotUserCurves();
+        });
+
+        // Clear and update contents of PlotView canvas
+        document.getElementById("clearupdate").addEventListener("click", e => {
+          p.clearGraph();
+          plotUserCurves();
+        });
+
+        // Event handler to display a additional input row for a PolynomialCurve
+        document.getElementById("newcurve").addEventListener("click", e => {
+          // Counter intuitive to add element to DOM before adding a
+          // PolynomialCurve to PlotView, reasoning for this is that
+          // makeCurveElement is index based and thus length attribute is
+          // the index of next element.
+          let container = makeCurveElement(p.polynomialCurves.length);
+          document.getElementById("curves").appendChild(container);
+          // Add empty, to be populated object to PlotView curve array
+          p.addPolynomialCurve(new PolynomialCurve());
+        });
+
+        // Event handler to move origo point
+        document.getElementById("updateOrigo").addEventListener("click", e => {
+          let vSelect = document.getElementById("origoVPosition");
+          let hSelect = document.getElementById("origoHPosition");
+
+          p.moveOrigo(vSelect.value, hSelect.value);
+          p.clearGraph();
+          p.plotAll();
+        });
+
+        document.getElementById("updateView").addEventListener("click", e => {
+            let canvas = document.getElementById(p.id);
+            if (typeof canvas !== "undefined")
+              canvas.parentNode.removeChild(canvas);
+
+            let width = document.getElementById("viewWidth").value;
+            let height = document.getElementById("viewHeight").value;
+            let unitsize = document.getElementById("unitSize").value;
+
+            p = new PlotView(parseInt(height), parseInt(width), parseInt(unitsize));
+
+            p.injectToAnchor("plot");
+        });
+
+        // Separation of UI aswell as readabilty
+        function makeCurveElement(curveNum) {
+          let container = document.createElement("div");
+          container.classList.add("curveinput");
+
+          let curve = document.createElement("input");
+          curve.setAttribute("type", "text");
+          curve.setAttribute("id", "expr" + curveNum);
+          container.appendChild(curve);
+
+          let color = document.createElement("input");
+          color.setAttribute("type", "color");
+          color.setAttribute("value", "#00ff00");
+          color.setAttribute("id", "color" + curveNum);
+          container.appendChild(color);
+
+          let start = document.createElement("input");
+          start.setAttribute("type", "number");
+          start.setAttribute("id", "start" + curveNum);
+          container.appendChild(start);
+
+          let end = document.createElement("input");
+          end.setAttribute("type", "number");
+          end.setAttribute("id", "end" + curveNum);
+          container.appendChild(end);
+
+          return container;
+        }
+    </script>
+  </body>
+</html>
