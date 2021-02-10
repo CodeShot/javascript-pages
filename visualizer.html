@@ -1,0 +1,43 @@
+<html>
+    <head>
+        <title>Visualization</title>
+    </head>
+    <body>
+        <canvas id="visualview">Canvas not supported</canvas>
+        <script>
+            var defaultStyle = {
+                fgColor: "green",
+                highlightColor: "red",
+                textColor: "black"
+            };
+            
+            var hOrientation = {
+                xStep: 1,
+                yStep: 0
+            };
+            
+            var vOrientation = {
+                xStep: 0,
+                yStep: 1
+            };
+            
+            var dOrientation = {
+                xStep: 1,
+                yStep: 1
+            };
+            
+            var canvas = document.getElementById("visualview");
+            var ctx = canvas.getContext("2d");
+            
+            function makeBoxLine(boxArray, orientation=vOrientation, postion={x: 0, y: 0}, style=defaultStyle) {
+                if (typeof orientation === "undefined") orientation = hOrientation;
+                
+                boxArray.forEach(item => {
+                    
+                    position.x += orientation.xStep;
+                    position.y += orientation.yStep;
+                });
+            }
+        </script>
+    </body>
+</html>
